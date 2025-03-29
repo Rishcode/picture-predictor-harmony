@@ -32,8 +32,12 @@ const mapDatabaseImageToImageItem = (dbImage: any): ImageItem => {
 export const uploadImage = async (file: File): Promise<ImageItem> => {
   try {
     // First check if user is authenticated
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("User not authenticated");
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) throw sessionError;
+    if (!session || !session.user) throw new Error("User not authenticated");
+
+    const user = session.user;
 
     // Generate a unique filename
     const fileExt = file.name.split('.').pop();
@@ -88,8 +92,12 @@ export const uploadImage = async (file: File): Promise<ImageItem> => {
 export const processImage = async (imageId: string): Promise<ImageItem> => {
   try {
     // First check if user is authenticated
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("User not authenticated");
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) throw sessionError;
+    if (!session || !session.user) throw new Error("User not authenticated");
+
+    const user = session.user;
     
     // Get the image from the database
     const { data: imageData, error: fetchError } = await supabase
@@ -175,8 +183,12 @@ export const processImage = async (imageId: string): Promise<ImageItem> => {
 export const getSavedImages = async (): Promise<ImageItem[]> => {
   try {
     // First check if user is authenticated
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return [];
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) throw sessionError;
+    if (!session || !session.user) return [];
+
+    const user = session.user;
     
     // Fetch user's images with their detected objects
     const { data: images, error } = await supabase
@@ -205,8 +217,12 @@ export const getSavedImages = async (): Promise<ImageItem[]> => {
 export const deleteImage = async (imageId: string): Promise<void> => {
   try {
     // First check if user is authenticated
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("User not authenticated");
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) throw sessionError;
+    if (!session || !session.user) throw new Error("User not authenticated");
+
+    const user = session.user;
     
     // Delete the image
     const { error } = await supabase
