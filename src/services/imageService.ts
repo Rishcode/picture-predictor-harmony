@@ -34,10 +34,18 @@ export const uploadImage = async (file: File): Promise<ImageItem> => {
     // First check if user is authenticated
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
-    if (sessionError) throw sessionError;
-    if (!session || !session.user) throw new Error("User not authenticated");
+    if (sessionError) {
+      console.error("Session error:", sessionError);
+      throw new Error("Authentication error: " + sessionError.message);
+    }
+    
+    if (!session || !session.user) {
+      console.error("No session or user found");
+      throw new Error("User not authenticated");
+    }
 
     const user = session.user;
+    console.log("Authenticated user:", user.id);
 
     // Generate a unique filename
     const fileExt = file.name.split('.').pop();
@@ -59,7 +67,10 @@ export const uploadImage = async (file: File): Promise<ImageItem> => {
       .select()
       .single();
     
-    if (insertError) throw insertError;
+    if (insertError) {
+      console.error("Insert error:", insertError);
+      throw new Error("Database error: " + insertError.message);
+    }
     
     // At this point we have a database record, return a temporary image item
     const tempImageItem: ImageItem = {
@@ -80,10 +91,13 @@ export const uploadImage = async (file: File): Promise<ImageItem> => {
       .update({ url: previewUrl })
       .eq('id', imageData.id);
     
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error("Update error:", updateError);
+      throw new Error("Database error: " + updateError.message);
+    }
     
     return tempImageItem;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error uploading image:", error);
     throw error;
   }

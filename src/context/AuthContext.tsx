@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   useEffect(() => {
-    // Set up auth state listener
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log("Auth state changed:", event, session?.user?.id);
@@ -47,9 +47,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isAuthenticated: true,
             isLoading: false,
           });
-          
-          // Save to localStorage for persistence
-          localStorage.setItem('user', JSON.stringify(user));
         } else {
           localStorage.removeItem('user');
           setAuthState({
@@ -61,57 +58,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-    // Check for initial session
+    // Then check for initial session
     const initAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      console.log("Initial session check:", session?.user?.id);
-      
-      if (session && session.user) {
-        const user: User = {
-          id: session.user.id,
-          username: session.user.email?.split('@')[0] || 'user',
-          email: session.user.email || '',
-        };
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
         
-        setAuthState({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-        });
+        console.log("Initial session check:", session?.user?.id);
         
-        localStorage.setItem('user', JSON.stringify(user));
-      } else {
-        // Check for saved user in localStorage as fallback
-        const savedUser = localStorage.getItem('user');
-        
-        if (savedUser) {
-          try {
-            const user = JSON.parse(savedUser);
-            
-            // Sign in with saved credentials if available
-            await supabase.auth.signInWithPassword({
-              email: user.email,
-              password: localStorage.getItem('userPassword') || '',
-            }).catch(() => {
-              // If sign in fails, clear localStorage
-              localStorage.removeItem('user');
-              localStorage.removeItem('userPassword');
-              setAuthState({
-                user: null,
-                isAuthenticated: false,
-                isLoading: false,
-              });
-            });
-          } catch (error) {
-            console.error('Failed to parse saved user:', error);
-            localStorage.removeItem('user');
-            setAuthState({
-              user: null,
-              isAuthenticated: false,
-              isLoading: false,
-            });
-          }
+        if (session && session.user) {
+          const user: User = {
+            id: session.user.id,
+            username: session.user.email?.split('@')[0] || 'user',
+            email: session.user.email || '',
+          };
+          
+          setAuthState({
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+          });
         } else {
           setAuthState({
             user: null,
@@ -119,6 +84,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             isLoading: false,
           });
         }
+      } catch (error) {
+        console.error("Error getting session:", error);
+        setAuthState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
       }
     };
     
@@ -156,9 +128,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       if (data.user) {
-        // Store password securely for potential session recovery
-        localStorage.setItem('userPassword', password);
-        
         toast({
           title: "Login Successful",
           description: `Welcome back, ${data.user.email?.split('@')[0]}!`,
@@ -210,9 +179,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       if (data.user) {
-        // Store password securely for potential session recovery
-        localStorage.setItem('userPassword', password);
-        
         toast({
           title: "Registration Successful",
           description: `Welcome, ${username}!`,
@@ -235,7 +201,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem('user');
-    localStorage.removeItem('userPassword');
     
     toast({
       title: "Logged Out",
