@@ -29,22 +29,33 @@ const ImageDetails = () => {
   useEffect(() => {
     if (!id) return;
     
-    const loadImage = () => {
-      const savedImages = getSavedImages();
-      const foundImage = savedImages.find(img => img.id === id);
-      
-      if (foundImage) {
-        setImage(foundImage);
-      } else {
+    const loadImage = async () => {
+      setIsLoading(true);
+      try {
+        const savedImages = await getSavedImages();
+        const foundImage = savedImages.find(img => img.id === id);
+        
+        if (foundImage) {
+          setImage(foundImage);
+        } else {
+          toast({
+            title: "Image not found",
+            description: "The requested image does not exist",
+            variant: "destructive",
+          });
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.error("Error loading image:", error);
         toast({
-          title: "Image not found",
-          description: "The requested image does not exist",
+          title: "Error loading image",
+          description: "There was a problem loading the image details",
           variant: "destructive",
         });
         navigate("/dashboard");
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
     
     loadImage();
@@ -62,6 +73,7 @@ const ImageDetails = () => {
         description: "Your image has been successfully analyzed",
       });
     } catch (error) {
+      console.error("Error processing image:", error);
       toast({
         title: "Processing failed",
         description: "There was an error processing your image",
@@ -72,15 +84,24 @@ const ImageDetails = () => {
     }
   };
 
-  const handleDeleteImage = () => {
+  const handleDeleteImage = async () => {
     if (!image) return;
     
-    deleteImage(image.id);
-    toast({
-      title: "Image deleted",
-      description: "Your image has been deleted",
-    });
-    navigate("/dashboard");
+    try {
+      await deleteImage(image.id);
+      toast({
+        title: "Image deleted",
+        description: "Your image has been deleted",
+      });
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast({
+        title: "Delete failed",
+        description: "There was an error deleting your image",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDownload = () => {

@@ -73,6 +73,7 @@ const Upload = () => {
         description: "Your image has been successfully uploaded",
       });
     } catch (error) {
+      console.error("Error uploading image:", error);
       toast({
         title: "Upload failed",
         description: "There was an error uploading your image",
@@ -95,6 +96,7 @@ const Upload = () => {
       });
       navigate(`/images/${processedImage.id}`);
     } catch (error) {
+      console.error("Error processing image:", error);
       toast({
         title: "Processing failed",
         description: "There was an error processing your image",

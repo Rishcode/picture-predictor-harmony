@@ -9,7 +9,100 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      detected_objects: {
+        Row: {
+          class_name: string
+          count: number
+          created_at: string
+          id: string
+          image_id: string
+          percentage: number
+        }
+        Insert: {
+          class_name: string
+          count: number
+          created_at?: string
+          id?: string
+          image_id: string
+          percentage: number
+        }
+        Update: {
+          class_name?: string
+          count?: number
+          created_at?: string
+          id?: string
+          image_id?: string
+          percentage?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "detected_objects_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "images"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      images: {
+        Row: {
+          annotated_image_url: string | null
+          id: string
+          name: string
+          processed: boolean | null
+          uploaded_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          annotated_image_url?: string | null
+          id?: string
+          name: string
+          processed?: boolean | null
+          uploaded_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          annotated_image_url?: string | null
+          id?: string
+          name?: string
+          processed?: boolean | null
+          uploaded_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "images_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
