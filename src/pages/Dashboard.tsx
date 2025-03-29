@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ImageItem } from "@/types";
 import { getSavedImages } from "@/services/imageService";
-import { Calendar, Camera, ChevronRight, Image, Upload } from "lucide-react";
+import { Calendar, Camera, ChevronRight, Image, Upload, Recycle } from "lucide-react";
 
 const Dashboard = () => {
   const { authState } = useAuth();

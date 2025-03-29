@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { uploadImage, processImage } from "@/services/imageService";
 import { ImageItem } from "@/types";
-import { Upload as UploadIcon, ArrowLeft, Loader2, Image } from "lucide-react";
+import { Upload as UploadIcon, ArrowLeft, Loader2, Image, Recycle, BarChart } from "lucide-react";
 
 const Upload = () => {
   const [isDragging, setIsDragging] = useState(false);
@@ -207,7 +207,7 @@ const Upload = () => {
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="bg-primary/10 rounded-full p-2 text-primary">
-                    <Upload className="h-6 w-6" />
+                    <UploadIcon className="h-6 w-6" />
                   </div>
                   <div>
                     <h3 className="font-medium">1. Upload Your Image</h3>

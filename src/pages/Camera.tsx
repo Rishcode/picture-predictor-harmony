@@ -8,12 +8,15 @@ import { uploadImage, processImage } from "@/services/imageService";
 import { ImageItem } from "@/types";
 import { 
   ArrowLeft, 
-  Camera, 
+  CameraIcon, 
   Loader2, 
   Recycle, 
   RefreshCw, 
   CameraOff,
-  VideoOff
+  VideoOff,
+  Sun,
+  Focus,
+  Move
 } from "lucide-react";
 
 const Camera = () => {
@@ -237,7 +240,7 @@ const Camera = () => {
                       {isCapturing ? (
                         <Loader2 className="h-6 w-6 animate-spin" />
                       ) : (
-                        <Camera className="h-6 w-6" />
+                        <CameraIcon className="h-6 w-6" />
                       )}
                     </Button>
                   </div>
